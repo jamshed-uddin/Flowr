@@ -20,7 +20,8 @@ const CardNode = ({ id, data, selected, width, height }) => {
     if (textContainer && parentContainer) {
       const textArea = textContainer.clientHeight * textContainer.clientWidth;
       const parentArea =
-        parentContainer.clientHeight * parentContainer.clientWidth;
+        (parentContainer.clientHeight - 24) *
+        (parentContainer.clientWidth - 24);
 
       if (textArea > parentArea) {
         setContainerOverflowed(true);
@@ -74,7 +75,7 @@ const CardNode = ({ id, data, selected, width, height }) => {
             value={text}
             onChange={handleChange}
             onBlur={handleBlur}
-            className="h-full bg-yellow-50  resize-none  outline-none p-0"
+            className="h-full bg-yellow-50  resize-none  outline-none p-0 nodrag"
             rows={5}
             style={{
               width: "100%",
@@ -87,16 +88,11 @@ const CardNode = ({ id, data, selected, width, height }) => {
             <span
               ref={textContainerRef}
               style={{ maxWidth: `${width}px` }}
-              className="block whitespace-wrap text-ellipsis break-words w-full border border-red-500"
+              className="block whitespace-wrap text-ellipsis break-words w-full"
             >
-              {
-                //   text.length > 150
-                //     ? text.slice(0, text.length / 2) + "..."
-                //     :
-                text
-              }
+              {text}
             </span>
-            {!containerOverflowed && (
+            {containerOverflowed && (
               <button className="text-blue-700 font-semibold text-sm absolute bottom-1 right-2 bg-yellow-50 rounded-xl">
                 Show more
               </button>

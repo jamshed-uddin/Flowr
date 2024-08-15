@@ -24,14 +24,7 @@ const initialNodes = [
   {
     id: "1",
     type: "cardNode",
-    position: { x: 0, y: 0 },
-    data: { text: "" },
-    selected: false,
-  },
-  {
-    id: "2",
-    type: "cardNode",
-    position: { x: 0, y: 200 },
+    position: { x: 100, y: 100 },
     data: { text: "" },
     selected: false,
   },
@@ -46,8 +39,10 @@ function App() {
 
   useEffect(() => {
     const selected = nodes.filter((node) => node.selected === true);
-    setSelectedNodes(selected);
+    setSelectedNodes(selected.map((nd) => nd.id));
   }, [nodes]);
+
+  console.log(selectedNodes);
 
   const onConnect = useCallback(
     (connection) => {
@@ -65,7 +60,7 @@ function App() {
       const y = event.clientY - top;
 
       const newNode = {
-        id: (nodes.length + 1).toString(),
+        id: Math.floor(Math.random() * 10000).toString(),
         type: "cardNode", // Use your custom node type
         position: { x, y },
         data: { text: "" },
@@ -76,6 +71,14 @@ function App() {
       setIsAddingNode(false);
     }
   };
+
+  const deleteSelectedNodes = () => {
+    const remainingNodes = nodes.filter((nd) => !selectedNodes.includes(nd.id));
+
+    console.log(remainingNodes);
+    setNodes(remainingNodes);
+  };
+  console.log(nodes);
 
   return (
     <div className={`relative `} style={{ width: "100vw", height: "100vh" }}>
@@ -96,7 +99,7 @@ function App() {
         </ReactFlow>
       </ReactFlowProvider>
       <div className="absolute bottom-4 left-1/2 px-3 py-2 rounded-xl bg-white -translate-x-1/2 space-x-4 shadow-md flex items-center gap-6">
-        {/* select button */}
+        {/* add node button */}
         <button
           onClick={() => setIsAddingNode(true)}
           className={`border-[2px] border-black h-5 w-5 rounded-sm active:scale-95 ${
@@ -106,8 +109,9 @@ function App() {
 
         {/* delete button */}
         <button
+          onClick={deleteSelectedNodes}
           disabled={!selectedNodes.length}
-          className="disabled:opacity-60 active:scale-95"
+          className="disabled:opacity-50 active:scale-95"
         >
           <TrashIcon className="w-6 h-6" />
         </button>
