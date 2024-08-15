@@ -1,13 +1,16 @@
 import {
   BaseEdge,
+  BezierEdge,
   EdgeLabelRenderer,
+  getBezierPath,
   getStraightPath,
   useReactFlow,
 } from "@xyflow/react";
 
-const CustomEdge = ({ id, sourceX, sourceY, targetX, targetY, selected }) => {
+const CustomEdge = (props) => {
+  const { id, sourceX, sourceY, targetX, targetY, selected } = props;
   const { setEdges } = useReactFlow();
-  const [edgePath, labelX, labelY] = getStraightPath({
+  const [edgePath, labelX, labelY] = getBezierPath({
     sourceX,
     sourceY,
     targetX,
@@ -15,7 +18,7 @@ const CustomEdge = ({ id, sourceX, sourceY, targetX, targetY, selected }) => {
   });
   return (
     <>
-      <BaseEdge id={id} path={edgePath} />
+      <BezierEdge {...props} />
       <EdgeLabelRenderer>
         {selected && (
           <button
@@ -24,7 +27,7 @@ const CustomEdge = ({ id, sourceX, sourceY, targetX, targetY, selected }) => {
               transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
               pointerEvents: "all",
             }}
-            className="nodrag nopan bg-white p-0.5 text-red-600 "
+            className="nodrag nopan bg-white px-1  text-red-600 font-semibold  "
             onClick={() => {
               setEdges((es) => es.filter((e) => e.id !== id));
             }}
