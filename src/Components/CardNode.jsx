@@ -5,6 +5,23 @@ import {
   Position,
 } from "@xyflow/react";
 import React, { useEffect, useRef, useState } from "react";
+import Modal from "react-modal";
+
+const customStyles = {
+  content: {
+    top: "50%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    width: "fit-content",
+    marginRight: "-50%",
+    transform: "translate(-50%, -50%)",
+    backgroundColor: "#fefce8",
+    position: "relative",
+  },
+};
+
+Modal.setAppElement("#root");
 
 const CardNode = ({ id, data, selected, width, height }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -13,6 +30,7 @@ const CardNode = ({ id, data, selected, width, height }) => {
   const textContainerRef = useRef(null);
   const parentRef = useRef(null);
   const [containerOverflowed, setContainerOverflowed] = useState(false);
+  const [modalIsOpen, setIsOpen] = React.useState(false);
 
   useEffect(() => {
     const textContainer = textContainerRef.current;
@@ -52,8 +70,32 @@ const CardNode = ({ id, data, selected, width, height }) => {
     setText(e.target.value);
   };
 
+  function openModal() {
+    setIsOpen(true);
+  }
+
+  function closeModal() {
+    setIsOpen(false);
+  }
+
   return (
     <>
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        style={customStyles}
+      >
+        <div className="w-[80vw] lg:w-[40vw]">
+          <p>{text}</p>
+          <button
+            onClick={closeModal}
+            className="text-xl font-semibold text-red-600 absolute top-0 right-3"
+          >
+            x
+          </button>
+        </div>
+      </Modal>
+
       <NodeResizer
         minHeight={160}
         minWidth={160}
@@ -75,7 +117,7 @@ const CardNode = ({ id, data, selected, width, height }) => {
             value={text}
             onChange={handleChange}
             onBlur={handleBlur}
-            className="h-full bg-yellow-50  resize-none  outline-none p-0 nodrag"
+            className="h-full bg-yellow-50  resize-none  outline-none p-0 nodrag hide-scrollbar nowheel"
             rows={5}
             style={{
               width: "100%",
@@ -93,7 +135,10 @@ const CardNode = ({ id, data, selected, width, height }) => {
               {text}
             </span>
             {containerOverflowed && (
-              <button className="text-blue-700 font-semibold text-sm absolute bottom-1 right-2 bg-yellow-50 rounded-xl">
+              <button
+                onClick={openModal}
+                className="text-blue-700 font-semibold text-sm absolute bottom-[2px] right-2 bg-yellow-50 rounded-xl p-1"
+              >
                 Show more
               </button>
             )}
