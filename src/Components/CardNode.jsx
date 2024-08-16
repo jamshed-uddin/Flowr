@@ -3,6 +3,7 @@ import {
   NodeResizeControl,
   NodeResizer,
   Position,
+  useReactFlow,
 } from "@xyflow/react";
 import React, { useEffect, useRef, useState } from "react";
 import Modal from "react-modal";
@@ -25,6 +26,7 @@ Modal.setAppElement("#root");
 
 const CardNode = ({ id, data, selected, width, height }) => {
   const [isEditing, setIsEditing] = useState(false);
+  const { setNodes } = useReactFlow();
   const [text, setText] = useState("");
   const textRef = useRef(null);
   const textContainerRef = useRef(null);
@@ -32,6 +34,7 @@ const CardNode = ({ id, data, selected, width, height }) => {
   const [containerOverflowed, setContainerOverflowed] = useState(false);
   const [modalIsOpen, setIsOpen] = React.useState(false);
 
+  //   show more button according to child elements overflow
   useEffect(() => {
     const textContainer = textContainerRef.current;
     const parentContainer = parentRef.current;
@@ -64,6 +67,16 @@ const CardNode = ({ id, data, selected, width, height }) => {
 
   const handleBlur = () => {
     setIsEditing(false);
+    setNodes((prev) =>
+      prev.map((node) =>
+        node.id === id
+          ? {
+              ...node,
+              data: { ...node.data, text: text },
+            }
+          : node
+      )
+    );
   };
 
   const handleChange = (e) => {
@@ -100,7 +113,7 @@ const CardNode = ({ id, data, selected, width, height }) => {
         minHeight={160}
         minWidth={160}
         isVisible={selected}
-        lineStyle={{ border: "1px solid blue" }}
+        lineStyle={{ border: "1.4px solid blue" }}
       />
 
       <div
@@ -114,10 +127,10 @@ const CardNode = ({ id, data, selected, width, height }) => {
         {isEditing ? (
           <textarea
             ref={textRef}
-            value={text}
             onChange={handleChange}
             onBlur={handleBlur}
             className="h-full bg-yellow-50  resize-none  outline-none p-0 nodrag hide-scrollbar nowheel"
+            defaultValue={data?.text}
             rows={5}
             style={{
               width: "100%",
@@ -125,19 +138,19 @@ const CardNode = ({ id, data, selected, width, height }) => {
               maxWidth: `${width}px`,
             }}
           />
-        ) : text ? (
+        ) : data?.text ? (
           <>
             <span
               ref={textContainerRef}
               style={{ maxWidth: `${width}px` }}
               className="block whitespace-wrap text-ellipsis break-words w-full"
             >
-              {text}
+              {data?.text}
             </span>
             {containerOverflowed && (
               <button
                 onClick={openModal}
-                className="text-blue-700 font-semibold text-sm absolute bottom-[2px] right-2 bg-yellow-50 rounded-xl p-1"
+                className="text-blue-700 font-semibold text-xs absolute bottom-[2px] right-2 bg-yellow-50 rounded-xl p-1"
               >
                 Show more
               </button>

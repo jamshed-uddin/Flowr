@@ -20,16 +20,19 @@ const edgeTypes = {
   customEdge: CustomEdge,
 };
 
-const initialNodes = [
-  {
-    id: "1",
-    type: "cardNode",
-    position: { x: 100, y: 100 },
-    data: { text: "" },
-    selected: false,
-  },
-];
-const initialEdges = [];
+const nodesFromLocal = JSON.parse(localStorage.getItem("flowr"));
+const initialNodes = nodesFromLocal?.nodes?.length
+  ? nodesFromLocal.nodes
+  : [
+      {
+        id: "1",
+        type: "cardNode",
+        position: { x: 100, y: 100 },
+        data: { text: "" },
+        selected: false,
+      },
+    ];
+const initialEdges = nodesFromLocal?.edges?.length ? nodesFromLocal.edges : [];
 
 function App() {
   const [selectedNodes, setSelectedNodes] = useState([]);
@@ -38,11 +41,13 @@ function App() {
   const [edges, setEdges, onEdgesChange] = useNodesState(initialEdges);
 
   useEffect(() => {
+    localStorage.setItem("flowr", JSON.stringify({ nodes, edges }));
+  }, [nodes, edges]);
+
+  useEffect(() => {
     const selected = nodes.filter((node) => node.selected === true);
     setSelectedNodes(selected.map((nd) => nd.id));
   }, [nodes]);
-
-  console.log(selectedNodes);
 
   const onConnect = useCallback(
     (connection) => {
@@ -101,7 +106,11 @@ function App() {
       <div className="absolute bottom-4 left-1/2 px-3 py-2 rounded-xl bg-white -translate-x-1/2 space-x-4 shadow-md flex items-center gap-6">
         {/* add node button */}
         <button
-          onClick={() => setIsAddingNode(true)}
+          title={isAddingNode && "Click anywhere on the canvas to add card"}
+          aria-label={
+            isAddingNode && "Click anywhere on the canvas to add card"
+          }
+          onClick={() => setIsAddingNode((p) => !p)}
           className={`border-[2px] border-black h-5 w-5 rounded-sm active:scale-95 ${
             isAddingNode && "bg-yellow-100 border-gray-200 shadow-md"
           }`}
@@ -109,6 +118,8 @@ function App() {
 
         {/* delete button */}
         <button
+          title="Click to delete selected cards"
+          aria-label="Click to delete selected cards"
           onClick={deleteSelectedNodes}
           disabled={!selectedNodes.length}
           className="disabled:opacity-50 active:scale-95"

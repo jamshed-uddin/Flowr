@@ -10,3 +10,7 @@
   width: 0;
   height: 0;
 }
+
+.react-flow__panel.right {
+  opacity: 0;
+}
