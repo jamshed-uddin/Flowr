@@ -80,8 +80,12 @@ function App() {
   const deleteSelectedNodes = () => {
     const remainingNodes = nodes.filter((nd) => !selectedNodes.includes(nd.id));
 
-    console.log(remainingNodes);
+    const remainingEdges = edges.filter(
+      (edge) => !selectedNodes.includes(edge.target)
+    );
+
     setNodes(remainingNodes);
+    setEdges(remainingEdges);
   };
   console.log(nodes);
 
